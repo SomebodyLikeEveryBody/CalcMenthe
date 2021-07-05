@@ -53,7 +53,6 @@ function Controller(pQuestionWidget, pAnswerWidget) {
 
     this.init = function () {
         this.setEvents();
-        this.status = this.QUESTION_ASKED_STATUS;
     };
 }
 
