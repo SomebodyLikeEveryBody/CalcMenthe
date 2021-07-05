@@ -26,7 +26,6 @@ section#content
     flex-direction: column;
     border-radius: 25px;
     border: white 3px solid;
-    
 }
 
 section#question
@@ -53,4 +52,5 @@ input#answer
     text-align: center;
     border: none;
     border-radius: 25px;
+    color: black;    
 }

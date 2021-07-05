@@ -12,28 +12,36 @@ function Controller(pQuestionWidget, pAnswerWidget) {
 
     this.questionWidget = pQuestionWidget;
     this.answerWidget = pAnswerWidget;
-    this.question = '';
-    this.status = this.UNDEFINED_STATUS;
+    this.status = this.QUESTION_ASKED_STATUS;
 
-    this.proposeQuestion = function () {
-        this.question = rand(1, 50, true) + '^2';
-        this.questionWidget.setContent(this.question + ' = ?');
-        this.status = this.QUESTION_ASKED_STATUS;
-    }
+    this.getGoodAnswer = function () {
+        let number = Number(this.questionWidget.currentQuestion.split('^')[0]);
+        return (number * number);
+    };
 
     this.setEvents = function () {
         let that = this;
 
         this.questionWidget.jqEl.click(function () {
-            // if (that.status === QUESTION_ANSWERED_STATUS) {
-                that.questionWidget.hide();
-                that.proposeQuestion();
-                that.questionWidget.show();
+            if (that.status === that.QUESTION_ASKED_STATUS) {
+                that.status = that.QUESTION_ANSWERED_STATUS;
+                that.questionWidget.jqEl.fadeOut(100, function () {
+                    that.questionWidget.setContent(that.questionWidget.currentQuestion + ' = ' + that.getGoodAnswer());
+                    that.questionWidget.jqEl.fadeIn(100);
+                });
+                if (that.answerWidget.getInputVal() === that.getGoodAnswer()) {
+                    that.answerWidget.displayGoodStyle();
+                } else {
+                    that.answerWidget.displayWrongStyle();
+                }
+                
+            } else if (that.status === that.QUESTION_ANSWERED_STATUS) {
+                that.questionWidget.displayNewQuestion();
+                that.status = that.QUESTION_ASKED_STATUS;
                 that.answerWidget.clear();
                 that.answerWidget.focus();
-            // } else if (that.status === QUESTION_ASKED_STATUS) {
-
-            // }
+                that.answerWidget.displayDefaultStyle();
+            }
         });
 
         this.answerWidget.jqEl.keydown(function (e) {
@@ -45,21 +53,35 @@ function Controller(pQuestionWidget, pAnswerWidget) {
 
     this.init = function () {
         this.setEvents();
-        this.proposeQuestion();
+        this.status = this.QUESTION_ASKED_STATUS;
     };
 }
 
 function QuestionWidget() {
     this.jqEl = $('#question');
     this.contentEl = this.jqEl.find('span');
+    this.currentQuestion = '';
 
     this.convertToLatex = function (pText) {
         return M(pText, true);
     }
 
+    this.generateQuestion = function () {
+        this.currentQuestion = rand(1, 20, true) + '^2';
+        return this.currentQuestion;
+    }
+
+    this.displayNewQuestion = function () {
+        let that = this;
+        this.hide(function () {
+            that.setContent(that.generateQuestion() + ' = ? ');
+            that.show();
+        });
+    };
+
     this.click = () => this.jqEl.click();
-    this.hide = () => this.contentEl.hide(500);
-    this.show = () => this.contentEl.fadeIn(500);
+    this.hide = (pCallback) => this.contentEl.hide(300, pCallback);
+    this.show = () => this.contentEl.fadeIn(200);
     this.clearContent = () => this.contentEl.html('');
     this.setContent = function (ptextContent) {
         this.clearContent();
@@ -67,7 +89,7 @@ function QuestionWidget() {
     };
 
     this.init = function () {
-
+        this.setContent(this.generateQuestion() + ' = ? ');
     };
 }
 
@@ -76,7 +98,20 @@ function AnswerWidget() {
 
     this.focus = () => this.jqEl.focus();
     this.clear = () => this.jqEl.val('');
-    this.addclickEvent = this.jqEl.click;
+    this.addClickEvent = this.jqEl.click;
+
+    this.getInputVal = () => Number(this.jqEl.val());
+    this.displayGoodStyle = function () {
+        this.jqEl.css({'color': 'darkgrey', 'text-shadow': 'green 10px 0 20px'});
+    };
+
+    this.displayWrongStyle = function () {
+        this.jqEl.css({'color': 'black', 'text-shadow': 'red 10px 0 20px'});
+    };
+
+    this.displayDefaultStyle = function () {
+        this.jqEl.css({'color': 'black', 'text-shadow': 'none'});
+    };
 
     this.init = function () {
         this.focus();
