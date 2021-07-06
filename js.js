@@ -1,10 +1,3 @@
-function rand(pMin, pMax, pInteger) {
-	if(pInteger)
-		return Math.floor(((Math.random() * (pMax-pMin+1)) + pMin));		
-	else
-    		return ((Math.random() * (pMax-pMin)) + pMin);
-}
-
 function Controller(pQuestionWidget, pAnswerWidget) {
     this.QUESTION_ASKED_STATUS = 0;
     this.QUESTION_ANSWERED_STATUS = 1;
@@ -19,6 +12,14 @@ function Controller(pQuestionWidget, pAnswerWidget) {
         return (number * number);
     };
 
+    this.propoundNewQuestion = function () {
+        this.questionWidget.displayNewQuestion();
+        this.status = this.QUESTION_ASKED_STATUS;
+        this.answerWidget.clear();
+        this.answerWidget.focus();
+        this.answerWidget.displayDefaultStyle();
+    };
+
     this.setEvents = function () {
         let that = this;
 
@@ -27,8 +28,15 @@ function Controller(pQuestionWidget, pAnswerWidget) {
                 that.status = that.QUESTION_ANSWERED_STATUS;
                 that.questionWidget.jqEl.fadeOut(100, function () {
                     that.questionWidget.setContent(that.questionWidget.currentQuestion + ' = ' + that.getGoodAnswer());
-                    that.questionWidget.jqEl.fadeIn(100);
+                    that.questionWidget.jqEl.fadeIn(100, function () {
+                        if (that.answerWidget.getInputVal() === that.getGoodAnswer()) {
+                            setTimeout(function () {
+                                that.propoundNewQuestion();
+                            }, 100);
+                        }
+                    });
                 });
+
                 if (that.answerWidget.getInputVal() === that.getGoodAnswer()) {
                     that.answerWidget.displayGoodStyle();
                 } else {
@@ -36,11 +44,7 @@ function Controller(pQuestionWidget, pAnswerWidget) {
                 }
                 
             } else if (that.status === that.QUESTION_ANSWERED_STATUS) {
-                that.questionWidget.displayNewQuestion();
-                that.status = that.QUESTION_ASKED_STATUS;
-                that.answerWidget.clear();
-                that.answerWidget.focus();
-                that.answerWidget.displayDefaultStyle();
+                that.propoundNewQuestion();
             }
         });
 
@@ -60,15 +64,44 @@ function QuestionWidget() {
     this.jqEl = $('#question');
     this.contentEl = this.jqEl.find('span');
     this.currentQuestion = '';
+    this.minBoundary = 0;
+    this.maxBoundary = 0;
+
+    this.rand = function (pMin, pMax, pInteger) {
+        if(pInteger)
+            return Math.floor(((Math.random() * (pMax-pMin+1)) + pMin));		
+        else
+            return ((Math.random() * (pMax-pMin)) + pMin);
+    };
+
+    this.getParamInURL = function (pParam) {
+        let vars = {};
+      
+        window.location.href
+          .replace(location.hash, "")
+          .replace(/[?&]+([^=&]+)=?([^&]*)?/gi, function(m, key, value) {
+            vars[key] = value !== undefined ? value : "";
+          });
+      
+        if (pParam) {
+          return vars[pParam] ? vars[pParam] : 'nope';
+        }
+    };
+
+    this.getBoundary = function (pParam, pDefaultValue) {
+        let param = Number(this.getParamInURL(pParam));
+    
+        return ((Number.isNaN(param) || param < 0) ? pDefaultValue : param);
+    };
 
     this.convertToLatex = function (pText) {
         return M(pText, true);
-    }
+    };
 
     this.generateQuestion = function () {
-        this.currentQuestion = rand(1, 20, true) + '^2';
+        this.currentQuestion = this.rand(this.minBoundary, this.maxBoundary, true) + '^2';
         return this.currentQuestion;
-    }
+    };
 
     this.displayNewQuestion = function () {
         let that = this;
@@ -88,6 +121,13 @@ function QuestionWidget() {
     };
 
     this.init = function () {
+        this.minBoundary = this.getBoundary('min', 0);
+        this.maxBoundary = this.getBoundary('max', 30);
+        
+        if (this.maxBoundary < this.minBoundary) {
+            this.maxBoundary = this.minBoundary + this.maxBoundary
+        }
+
         this.setContent(this.generateQuestion() + ' = ? ');
     };
 }
