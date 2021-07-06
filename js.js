@@ -1,3 +1,4 @@
+//okay
 function Controller(pQuestionWidget, pAnswerWidget) {
     this.QUESTION_ASKED_STATUS = 0;
     this.QUESTION_ANSWERED_STATUS = 1;
