@@ -104,6 +104,9 @@ button#closeOptionsPanel
     position: absolute;
     top: calc(25px);
     left: calc(95% - 25px);
+    background-image: url('./close-svgrepo-com.svg');
+    background-size: 5vw;
+    cursor:pointer;
 }
 
 #optionsPanel table

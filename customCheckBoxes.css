@@ -2,8 +2,8 @@
 {
     display: block;
     position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
+    padding-left: 2vw;
+    margin-bottom: 2vw;
     cursor: pointer;
     /* font-size: 22px; */
     -webkit-user-select: none;
@@ -55,10 +55,10 @@
 
 .checkBoxContainer .checkmark:after
 {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
+    left: 0.5vw;
+    top: 0.5vw;
+    width: 0.7vw;
+    height: 0.7vw;
     border: solid white;
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
