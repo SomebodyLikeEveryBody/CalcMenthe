@@ -61,6 +61,16 @@ function Controller(pQuestionWidget, pAnswerWidget) {
     };
 }
 
+function QuestionGenerator() {
+
+    this.rand = function (pMin, pMax, pInteger) {
+        if(pInteger)
+            return Math.floor(((Math.random() * (pMax-pMin+1)) + pMin));		
+        else
+            return ((Math.random() * (pMax-pMin)) + pMin);
+    };
+}
+
 function QuestionWidget() {
     this.jqEl = $('#question');
     this.contentEl = this.jqEl.find('span');
@@ -158,12 +168,52 @@ function AnswerWidget() {
     }
 }
 
+function OptionPanel() {
+    this.jqEl = $("#optionsPanel");
+    this.closeOptionsPanelButton = $("#closeOptionsPanel")
+    this.isVisible = false;
+
+    this.show = function () {
+        if(this.isVisible === false) {
+            this.jqEl.fadeIn(200);
+            this.isVisible = true;
+        }
+    }
+    
+    this.hide = function() {
+        if(this.isVisible === true) {
+            this.jqEl.fadeOut(200);
+            this.isVisible = false;
+        }
+    }
+ 
+    this.setEvents = function() {
+        this.closeOptionsPanelButton.on('click', () => {
+            this.hide();
+        });
+    }
+
+    this.init = function() {
+        this.setEvents();
+    }
+}
+
 $(function () {
     let questionWidget = new QuestionWidget();
     let answerWidget = new AnswerWidget();
+    let optionPanel = new OptionPanel();
     let controller = new Controller(questionWidget, answerWidget);
 
     questionWidget.init();
     answerWidget.init();
+    optionPanel.init();
     controller.init();
+
+    $('#optionsButton').on('click', () => optionPanel.show());
+    $('body').on('keydown', (e) => {
+        if(e.which === 27) {
+            optionPanel.hide();
+        }
+    })
 });
+
