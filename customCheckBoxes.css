@@ -5,7 +5,7 @@
     padding-left: 35px;
     margin-bottom: 12px;
     cursor: pointer;
-    font-size: 22px;
+    /* font-size: 22px; */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -26,8 +26,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 25px;
-    width: 25px;
+    height: 2vw;
+    width: 2vw;
     background-color: #eee;
 }
 
@@ -53,7 +53,7 @@
     display: block;
 }
 
-.container .checkmark:after
+.checkBoxContainer .checkmark:after
 {
     left: 9px;
     top: 5px;
