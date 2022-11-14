@@ -190,6 +190,7 @@ function OptionPanel() {
     this.setEvents = function() {
         this.closeOptionsPanelButton.on('click', () => {
             this.hide();
+            $('#answer').focus();
         });
     }
 
