@@ -1,4 +1,3 @@
-//okay
 function Controller(pQuestionWidget, pAnswerWidget) {
     this.QUESTION_ASKED_STATUS = 0;
     this.QUESTION_ANSWERED_STATUS = 1;
@@ -7,14 +6,18 @@ function Controller(pQuestionWidget, pAnswerWidget) {
     this.questionWidget = pQuestionWidget;
     this.answerWidget = pAnswerWidget;
     this.status = this.QUESTION_ASKED_STATUS;
+    this.questionsManager = new QuestionsManager();
 
+    /*
+     * 
+     * * */
     this.getGoodAnswer = function () {
-        let number = Number(this.questionWidget.currentQuestion.split('^')[0]);
-        return (number * number);
+        console.log(this.questionsManager.currentAnswer);
+        return (this.questionsManager.currentAnswer);
     };
 
     this.propoundNewQuestion = function () {
-        this.questionWidget.displayNewQuestion();
+        this.questionWidget.displayNewQuestion(this.questionsManager.generateQuestion());
         this.status = this.QUESTION_ASKED_STATUS;
         this.answerWidget.clear();
         this.answerWidget.focus();
@@ -28,9 +31,9 @@ function Controller(pQuestionWidget, pAnswerWidget) {
             if (that.status === that.QUESTION_ASKED_STATUS) {
                 that.status = that.QUESTION_ANSWERED_STATUS;
                 that.questionWidget.jqEl.fadeOut(100, function () {
-                    that.questionWidget.setContent(that.questionWidget.currentQuestion + ' = ' + that.getGoodAnswer());
+                    that.questionWidget.setContent(that.questionsManager.redactedAnswer);
                     that.questionWidget.jqEl.fadeIn(100, function () {
-                        if (that.answerWidget.getInputVal() === that.getGoodAnswer()) {
+                        if (that.answerWidget.getInputVal() === that.questionsManager.currentAnswer) {
                             setTimeout(function () {
                                 that.propoundNewQuestion();
                             }, 100);
@@ -58,16 +61,7 @@ function Controller(pQuestionWidget, pAnswerWidget) {
 
     this.init = function () {
         this.setEvents();
-    };
-}
-
-function QuestionGenerator() {
-
-    this.rand = function (pMin, pMax, pInteger) {
-        if(pInteger)
-            return Math.floor(((Math.random() * (pMax-pMin+1)) + pMin));		
-        else
-            return ((Math.random() * (pMax-pMin)) + pMin);
+        this.propoundNewQuestion();
     };
 }
 
@@ -109,15 +103,10 @@ function QuestionWidget() {
         return M(pText, true);
     };
 
-    this.generateQuestion = function () {
-        this.currentQuestion = this.rand(this.minBoundary, this.maxBoundary, true) + '^2';
-        return this.currentQuestion;
-    };
-
-    this.displayNewQuestion = function () {
+    this.displayNewQuestion = function (pQuestion) {
         let that = this;
         this.hide(function () {
-            that.setContent(that.generateQuestion() + ' = ? ');
+            that.setContent(pQuestion);
             that.show();
         });
     };
@@ -132,14 +121,6 @@ function QuestionWidget() {
     };
 
     this.init = function () {
-        this.minBoundary = this.getBoundary('min', 0);
-        this.maxBoundary = this.getBoundary('max', 30);
-        
-        if (this.maxBoundary < this.minBoundary) {
-            this.maxBoundary = this.minBoundary + this.maxBoundary
-        }
-
-        this.setContent(this.generateQuestion() + ' = ? ');
     };
 }
 
@@ -336,3 +317,57 @@ $(function () {
     })
 });
 
+function QuestionsManager() {
+    this.currentQuestion = '';
+    this.currentAnswer = '';
+    this.redactedAnswer = '';
+    this.parameters = ["squares", "cubes", "multiplications", "divisions", "modulos"];
+
+    this.rand = function (pMin, pMax, pInteger) {
+        if(pInteger)
+            return Math.floor(((Math.random() * (pMax-pMin+1)) + pMin));		
+        else
+            return ((Math.random() * (pMax-pMin)) + pMin);
+    };
+
+    this.getParamInURL = function (pParam) {
+        let vars = {};
+      
+        window.location.href
+          .replace(location.hash, "")
+          .replace(/[?&]+([^=&]+)=?([^&]*)?/gi, function(m, key, value) {
+            vars[key] = value !== undefined ? value : "";
+          });
+      
+        if (pParam) {
+          return vars[pParam] ? vars[pParam] : 'nope';
+        }
+    };
+
+    this.generateQuestion = function () {
+        return this.squaresGenerateQuestion();
+    }
+
+    this.squaresGenerateQuestion = function () {
+
+        const minBoundary = parseInt(this.getParamInURL('squaresMin'));
+        const maxBoundary = parseInt(this.getParamInURL('squaresMax'));
+
+        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
+            if (minBoundary > maxBoundary) {
+                const temp = minBoundary;
+                minBoundary = maxBoundary;
+                maxBoundary = temp;
+            }
+
+            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+            this.currentQuestion = generatedNumber + "^2 = ?";
+            this.currentAnswer = generatedNumber * generatedNumber;
+            this.redactedAnswer = generatedNumber + "^2 = " + this.currentAnswer;
+
+            return this.currentQuestion;
+        }
+
+        return '';
+    }
+}

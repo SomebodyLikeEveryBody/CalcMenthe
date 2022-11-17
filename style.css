@@ -47,7 +47,7 @@ section#content
 section#question
 {
     height: 50%;
-    font-size: 12vw;
+    font-size: 10vw;
     text-align: center;
     background-color: black;
     border-radius: 25px;
@@ -118,5 +118,5 @@ button#closeOptionsPanel
 {
     width: 5vw;
     height: 3vw;
-    font-size: 2vw;
+    font-size: 3vw;
 }
