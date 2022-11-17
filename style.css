@@ -47,7 +47,7 @@ section#content
 section#question
 {
     height: 50%;
-    font-size: 5vw;
+    font-size: 18vh;
     text-align: center;
     background-color: black;
     border-radius: 25px;
@@ -55,7 +55,6 @@ section#question
     display: flex;
     flex-direction: column;
     justify-content: center;
-
 }
 
 input#answer
@@ -119,4 +118,47 @@ button#closeOptionsPanel
     width: 5vw;
     height: 3vw;
     font-size: 3vw;
+}
+
+@media (max-width: 900px)
+{
+    section#question
+    {
+        font-size: 15vh;
+    }   
+
+    section#optionsPanel
+    {
+        font-size: 4vw;
+    }
+
+    #optionsPanel input[type=number]
+    {
+        margin-bottom: 15px;
+        width: 8vw;
+    }
+}
+
+@media (max-width: 600px)
+{
+    section#question
+    {
+        font-size: 8vh;
+    }   
+
+    input#answer
+    {
+        font-size: 12vh;
+    }
+
+    section#optionsPanel
+    {
+        font-size: 4vw;
+    }
+
+    #optionsPanel input[type=number]
+    {
+        margin-bottom: 15px;
+        width: 7.5vw;
+    }
 }
