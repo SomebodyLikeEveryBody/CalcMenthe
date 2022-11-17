@@ -172,9 +172,112 @@ function OptionPanel() {
     this.jqEl = $("#optionsPanel");
     this.closeOptionsPanelButton = $("#closeOptionsPanel")
     this.isVisible = false;
+    this.parameters = ["squares", "cubes", "multiplications", "divisions", "modulos"];
+
+    this.getParamInURL = function (pParam) {
+        let vars = {};
+      
+        window.location.href
+          .replace(location.hash, "")
+          .replace(/[?&]+([^=&]+)=?([^&]*)?/gi, function(m, key, value) {
+            vars[key] = value !== undefined ? value : "";
+          });
+      
+        if (pParam) {
+          return vars[pParam] ? vars[pParam] : 'nope';
+        }
+    };
+
+    this.isUrlContainingNoOptions = function () {
+        let ret = true;
+
+        for (const param of this.parameters) {
+            if (this.getParamInURL(param) !== 'nope') {
+                ret = false;
+                break;
+            }
+        }
+    
+        return (ret);
+    }
+
+    this.checkNCorrectUrl = function () {
+        const urlParams = window.location.href.split('?')
+
+        // If there are multiple "?" in the url or correct url but no options inside, we set default setttings
+        if ((urlParams.length !== 2) || (this.isUrlContainingNoOptions())) {
+            window.location.href = window.location.pathname + "?squares=1&squaresMin=0&squaresMax=50";
+        }
+    }
+
+    this.checkNCorrectBoundaries = function (pMinBoundary, pMaxBoundary) {
+        pMinBoundary = parseInt(pMinBoundary);
+        pMaxBoundary = parseInt(pMaxBoundary);
+
+        if (isNaN(pMinBoundary) || pMinBoundary < 0 ) {
+            pMinBoundary = 0;
+            console.log('min')
+        }
+
+        if (isNaN(pMaxBoundary) || pMaxBoundary < 0 ) {
+            pMaxBoundary = 50;
+            console.log('max')
+        }
+
+        if (pMinBoundary > pMaxBoundary) {
+            const swapper = pMinBoundary;
+
+            pMinBoundary = pMaxBoundary;
+            pMaxBoundary = swapper;
+            console.log('swap')
+        }
+
+        return [pMinBoundary, pMaxBoundary];
+    }
+
+    // called when the optionPanel shows up to update its content using get params
+    this.updateOptionPanelContentBasedOnUrl = function () {
+        let minBoundary = 0;
+        let maxBoundary = 1;
+        let tempBoundariesArray = [];
+
+        for (const param of this.parameters) {
+            if (this.getParamInURL(param) === "1") {
+                $('#' + param + 'Option').prop('checked', true);
+
+                tempBoundariesArray = this.checkNCorrectBoundaries(this.getParamInURL(param + 'Min'), this.getParamInURL(param + 'Max'));
+                minBoundary = tempBoundariesArray[0];
+                maxBoundary = tempBoundariesArray[1];
+
+                $('#' + param + 'Min').val(minBoundary).prop('disabled', false);
+                $('#' + param + 'Max').val(maxBoundary).prop('disabled', false);
+            } else {
+                $('#' + param + 'Min').prop('disabled', true);
+                $('#' + param + 'Max').prop('disabled', true);
+            }
+        }
+    }
+
+    // called when the optionPanel hides down to update URL using optionPanel's content
+    this.updateURLBasedOnOptionPanelContent = function () {
+        let urlParams = '';
+        let tempBoundariesArray = [];
+
+        for (const param of this.parameters) {
+            if($('#' + param + 'Option').prop('checked') === true) {
+                urlParams += '&' + param + '=1';
+                tempBoundariesArray = this.checkNCorrectBoundaries($('#' + param + 'Min').val(), $('#' + param + 'Max').val());
+                urlParams += '&' + param + 'Min=' + tempBoundariesArray[0] + '&' + param + 'Max=' + tempBoundariesArray[1];
+
+            }
+        }
+
+        window.location.href = window.location.pathname + "?" + urlParams;
+    }
 
     this.show = function () {
         if(this.isVisible === false) {
+            this.updateOptionPanelContentBasedOnUrl();
             this.jqEl.fadeIn(200);
             this.isVisible = true;
         }
@@ -184,6 +287,7 @@ function OptionPanel() {
         if(this.isVisible === true) {
             this.jqEl.fadeOut(200);
             this.isVisible = false;
+            this.updateURLBasedOnOptionPanelContent();
         }
     }
  
@@ -192,10 +296,23 @@ function OptionPanel() {
             this.hide();
             $('#answer').focus();
         });
+
+        for (const param of this.parameters) {
+            $('#' + param + 'Option').change(function () {
+                if (this.checked === true) {
+                    $('#' + param + 'Min').prop('disabled', false);
+                    $('#' + param + 'Max').prop('disabled', false);
+                } else {
+                    $('#' + param + 'Min').prop('disabled', true);
+                    $('#' + param + 'Max').prop('disabled', true);
+                }
+            });
+        }
     }
 
     this.init = function() {
         this.setEvents();
+        this.checkNCorrectUrl();
     }
 }
 
@@ -213,7 +330,8 @@ $(function () {
     $('#optionsButton').on('click', () => optionPanel.show());
     $('body').on('keydown', (e) => {
         if(e.which === 27) {
-            optionPanel.hide();
+            e.preventDefault();
+            $('#closeOptionsPanel').click();
         }
     })
 });

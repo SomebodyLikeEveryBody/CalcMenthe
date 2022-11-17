@@ -94,7 +94,7 @@ section#optionsPanel div
     flex-direction: column;
     border-radius: 25px;
     border: white 3px solid;
-
+    overflow: auto;
 }
 
 button#closeOptionsPanel
@@ -118,5 +118,5 @@ button#closeOptionsPanel
 {
     width: 5vw;
     height: 3vw;
-    font-size: 3vw;
+    font-size: 2vw;
 }
