@@ -120,7 +120,7 @@ button#closeOptionsPanel
     font-size: 3vw;
 }
 
-@media screen and (max-width: 900px)
+@media all and (max-width: 900px)
 {
     section#question
     {
@@ -139,7 +139,7 @@ button#closeOptionsPanel
     }
 }
 
-@media screen and (max-width: 600px)
+@media all and (max-width: 600px)
 {
     section#question
     {
