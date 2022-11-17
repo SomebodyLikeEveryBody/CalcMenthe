@@ -180,7 +180,7 @@ function OptionPanel() {
         }
     
         return (ret);
-    }
+    };
 
     this.checkNCorrectUrl = function () {
         const urlParams = window.location.href.split('?')
@@ -189,7 +189,7 @@ function OptionPanel() {
         if ((urlParams.length !== 2) || (this.isUrlContainingNoOptions())) {
             window.location.href = window.location.pathname + "?squares=1&squaresMin=0&squaresMax=50";
         }
-    }
+    };
 
     this.checkNCorrectBoundaries = function (pMinBoundary, pMaxBoundary) {
         pMinBoundary = parseInt(pMinBoundary);
@@ -214,7 +214,7 @@ function OptionPanel() {
         }
 
         return [pMinBoundary, pMaxBoundary];
-    }
+    };
 
     // called when the optionPanel shows up to update its content using get params
     this.updateOptionPanelContentBasedOnUrl = function () {
@@ -237,7 +237,7 @@ function OptionPanel() {
                 $('#' + param + 'Max').prop('disabled', true);
             }
         }
-    }
+    };
 
     // called when the optionPanel hides down to update URL using optionPanel's content
     this.updateURLBasedOnOptionPanelContent = function () {
@@ -254,7 +254,7 @@ function OptionPanel() {
         }
 
         window.location.href = window.location.pathname + "?" + urlParams;
-    }
+    };
 
     this.show = function () {
         if(this.isVisible === false) {
@@ -262,7 +262,7 @@ function OptionPanel() {
             this.jqEl.fadeIn(200);
             this.isVisible = true;
         }
-    }
+    };
     
     this.hide = function() {
         if(this.isVisible === true) {
@@ -270,7 +270,7 @@ function OptionPanel() {
             this.isVisible = false;
             this.updateURLBasedOnOptionPanelContent();
         }
-    }
+    };
  
     this.setEvents = function() {
         this.closeOptionsPanelButton.on('click', () => {
@@ -294,7 +294,7 @@ function OptionPanel() {
     this.init = function() {
         this.setEvents();
         this.checkNCorrectUrl();
-    }
+    };
 }
 
 $(function () {
@@ -344,8 +344,63 @@ function QuestionsManager() {
         }
     };
 
+    this.checkBoundaryOptions = function(pBoundaryName) {
+        const minBoundary = parseInt(this.getParamInURL(pBoundaryName + 'Min'));
+        const maxBoundary = parseInt(this.getParamInURL(pBoundaryName + 'Max'));
+
+        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
+            if (minBoundary > maxBoundary) {
+                const temp = minBoundary;
+                minBoundary = maxBoundary;
+                maxBoundary = temp;
+            }
+        }
+    };
+
+    this.getAllActivatedModes = function () {
+        const listOptions = ['squares', 'cubes', 'multiplications', 'divisions', 'modulos'];
+        let listActivatedOptions = [];
+
+        for (const option of listOptions) {
+            if (this.getParamInURL(option) === '1') {
+                listActivatedOptions.push(option);
+            }
+        }
+
+        return (listActivatedOptions);
+    }
+
     this.generateQuestion = function () {
-        return this.squaresGenerateQuestion();
+        const listActivatedModes = this.getAllActivatedModes();
+        const pickedUpMode = listActivatedModes[this.rand(0, listActivatedModes.length - 1, true)];
+        let retQuestion = '';
+
+        switch (pickedUpMode) {
+            case 'squares':
+                    retQuestion = this.squaresGenerateQuestion();
+                break;
+            
+            case 'cubes':
+                retQuestion = this.cubesGenerateQuestion();
+                break;
+            
+
+            case 'multiplications':
+                retQuestion = this.multiplicationsGenerateQuestion();
+                break;
+    
+
+            case 'divisions':
+                retQuestion = this.divisionsGenerateQuestion();
+                break;
+
+                
+            case 'modulos':
+                retQuestion = this.modulosGenerateQuestion();
+                break;
+        }
+
+        return retQuestion;
     }
 
     this.squaresGenerateQuestion = function () {
@@ -364,6 +419,98 @@ function QuestionsManager() {
             this.currentQuestion = generatedNumber + "^2 = ?";
             this.currentAnswer = generatedNumber * generatedNumber;
             this.redactedAnswer = generatedNumber + "^2 = " + this.currentAnswer;
+
+            return this.currentQuestion;
+        }
+
+        return '';
+    }
+
+    this.cubesGenerateQuestion = function () {
+        const minBoundary = parseInt(this.getParamInURL('cubesMin'));
+        const maxBoundary = parseInt(this.getParamInURL('cubesMax'));
+
+        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
+            if (minBoundary > maxBoundary) {
+                const temp = minBoundary;
+                minBoundary = maxBoundary;
+                maxBoundary = temp;
+            }
+
+            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+            this.currentQuestion = generatedNumber + "^3 = ?";
+            this.currentAnswer = generatedNumber * generatedNumber * generatedNumber;
+            this.redactedAnswer = generatedNumber + "^3 = " + this.currentAnswer;
+
+            return this.currentQuestion;
+        }
+
+        return '';
+    }
+
+    this.multiplicationsGenerateQuestion = function () {
+        const minBoundary = parseInt(this.getParamInURL('multiplicationsMin'));
+        const maxBoundary = parseInt(this.getParamInURL('multiplicationsMax'));
+
+        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
+            if (minBoundary > maxBoundary) {
+                const temp = minBoundary;
+                minBoundary = maxBoundary;
+                maxBoundary = temp;
+            }
+
+            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+            const secondNumber = this.rand(0, 10, true);
+            this.currentQuestion = generatedNumber + " × " + secondNumber + " = ?";
+            this.currentAnswer = generatedNumber * secondNumber;
+            this.redactedAnswer = generatedNumber + " × " + secondNumber + " = " + this.currentAnswer;
+
+            return this.currentQuestion;
+        }
+
+        return '';
+    }
+
+    this.divisionsGenerateQuestion = function () {
+        const minBoundary = parseInt(this.getParamInURL('divisionsMin'));
+        const maxBoundary = parseInt(this.getParamInURL('divisionsMax'));
+
+        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
+            if (minBoundary > maxBoundary) {
+                const temp = minBoundary;
+                minBoundary = maxBoundary;
+                maxBoundary = temp;
+            }
+
+            this.currentAnswer = this.rand(minBoundary, maxBoundary, true);
+            const secondNumber = this.rand(1, 10, true);
+            const generatedNumber = this.currentAnswer * secondNumber;
+            
+            this.currentQuestion = generatedNumber + "/" + secondNumber + " = ?";
+            this.redactedAnswer = generatedNumber + "/" + secondNumber + " = " + this.currentAnswer;
+
+            return this.currentQuestion;
+        }
+
+        return '';
+    }
+
+    this.modulosGenerateQuestion = function () {
+        const minBoundary = parseInt(this.getParamInURL('modulosMin'));
+        const maxBoundary = parseInt(this.getParamInURL('modulosMax'));
+
+        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
+            if (minBoundary > maxBoundary) {
+                const temp = minBoundary;
+                minBoundary = maxBoundary;
+                maxBoundary = temp;
+            }
+
+            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+            const secondNumber = this.rand(1, 10, true);
+            this.currentQuestion = generatedNumber + " % " + secondNumber + " = ?";
+            this.currentAnswer = generatedNumber % secondNumber;
+            this.redactedAnswer = generatedNumber + " % " + secondNumber + " = " + this.currentAnswer;
 
             return this.currentQuestion;
         }
