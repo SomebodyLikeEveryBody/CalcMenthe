@@ -1,6 +1,6 @@
 # CalcMenthe
 
-- Full front end website for mental calculs training
+- Full front end website for train and practice mental calculus
 - Working well on  computer, smartphones and tablets (responsive design)
 - Able to run offline, even with the file:// protocol by drag 'n dropping index.htm in your browser
 - 5 training themes that can be combined:
@@ -9,6 +9,11 @@
   - multiplications
   - divisions
   - modulos
+
+- Possible upgrades:
+  - derivatives
+  - integrals
+  - litteral calculus
   
 
 https://somebodylikeeverybody.github.io/CalcMenthe/
