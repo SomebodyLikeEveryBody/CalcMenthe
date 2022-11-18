@@ -2,10 +2,10 @@
 
 https://somebodylikeeverybody.github.io/CalcMenthe/
 
-<p float="left">
-  <img src="./readMeImages/generalView.png" width="33%" />
-  <img src="./readMeImages/goodView.png" width="33%" /> 
-  <img src="./readMeImages/errorView.png" width="33%" />
+<p>
+  <img src="./readMeImages/generalView.png" width="30%" />
+  <img src="./readMeImages/goodView.png" width="30%" /> 
+  <img src="./readMeImages/errorView.png" width="30%" />
 </p>
 
 ---
