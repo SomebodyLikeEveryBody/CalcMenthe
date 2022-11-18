@@ -16,6 +16,8 @@ https://somebodylikeeverybody.github.io/CalcMenthe/
 - 5 training themes that can be combined in the options menu:
   - squares
   - cubes
+  - additions
+  - substractions
   - multiplications
   - divisions
   - modulos
