@@ -12,7 +12,6 @@ function Controller(pQuestionWidget, pAnswerWidget) {
      * 
      * * */
     this.getGoodAnswer = function () {
-        console.log(this.questionsManager.currentAnswer);
         return (this.questionsManager.currentAnswer);
     };
 
@@ -187,7 +186,7 @@ function OptionPanel() {
 
         // If there are multiple "?" in the url or correct url but no options inside, we set default setttings
         if ((urlParams.length !== 2) || (this.isUrlContainingNoOptions())) {
-            window.location.href = window.location.pathname + "?squares=1&squaresMin=0&squaresMax=50";
+            window.location.href = window.location.pathname + "?squares=1&squaresMin=0&squaresMax=50&cubes=1&cubesMin=0&cubesMax=50&multiplications=1&multiplicationsMin=0&multiplicationsMax=50&divisions=1&divisionsMin=0&divisionsMax=50&modulos=1&modulosMin=0&modulosMax=50";
         }
     };
 
@@ -197,12 +196,10 @@ function OptionPanel() {
 
         if (isNaN(pMinBoundary) || pMinBoundary < 0 ) {
             pMinBoundary = 0;
-            console.log('min')
         }
 
         if (isNaN(pMaxBoundary) || pMaxBoundary < 0 ) {
             pMaxBoundary = 50;
-            console.log('max')
         }
 
         if (pMinBoundary > pMaxBoundary) {
@@ -210,7 +207,6 @@ function OptionPanel() {
 
             pMinBoundary = pMaxBoundary;
             pMaxBoundary = swapper;
-            console.log('swap')
         }
 
         return [pMinBoundary, pMaxBoundary];
@@ -297,26 +293,6 @@ function OptionPanel() {
     };
 }
 
-$(function () {
-    let questionWidget = new QuestionWidget();
-    let answerWidget = new AnswerWidget();
-    let optionPanel = new OptionPanel();
-    let controller = new Controller(questionWidget, answerWidget);
-
-    questionWidget.init();
-    answerWidget.init();
-    optionPanel.init();
-    controller.init();
-
-    $('#optionsButton').on('click', () => optionPanel.show());
-    $('body').on('keydown', (e) => {
-        if(e.which === 27) {
-            e.preventDefault();
-            $('#closeOptionsPanel').click();
-        }
-    })
-});
-
 function QuestionsManager() {
     this.currentQuestion = '';
     this.currentAnswer = '';
@@ -344,17 +320,26 @@ function QuestionsManager() {
         }
     };
 
-    this.checkBoundaryOptions = function(pBoundaryName) {
-        const minBoundary = parseInt(this.getParamInURL(pBoundaryName + 'Min'));
-        const maxBoundary = parseInt(this.getParamInURL(pBoundaryName + 'Max'));
+    this.checkNCorrectBoundaries = function (pMinBoundary, pMaxBoundary) {
+        pMinBoundary = parseInt(pMinBoundary);
+        pMaxBoundary = parseInt(pMaxBoundary);
 
-        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
-            if (minBoundary > maxBoundary) {
-                const temp = minBoundary;
-                minBoundary = maxBoundary;
-                maxBoundary = temp;
-            }
+        if (isNaN(pMinBoundary) || pMinBoundary < 0 ) {
+            pMinBoundary = 0;
         }
+
+        if (isNaN(pMaxBoundary) || pMaxBoundary < 0 ) {
+            pMaxBoundary = 50;
+        }
+
+        if (pMinBoundary > pMaxBoundary) {
+            const swapper = pMinBoundary;
+
+            pMinBoundary = pMaxBoundary;
+            pMaxBoundary = swapper;
+        }
+
+        return [pMinBoundary, pMaxBoundary];
     };
 
     this.getAllActivatedModes = function () {
@@ -405,116 +390,105 @@ function QuestionsManager() {
 
     this.squaresGenerateQuestion = function () {
 
-        const minBoundary = parseInt(this.getParamInURL('squaresMin'));
-        const maxBoundary = parseInt(this.getParamInURL('squaresMax'));
+        let minBoundary = parseInt(this.getParamInURL('squaresMin'));
+        let maxBoundary = parseInt(this.getParamInURL('squaresMax'));
 
-        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
-            if (minBoundary > maxBoundary) {
-                const temp = minBoundary;
-                minBoundary = maxBoundary;
-                maxBoundary = temp;
-            }
+        [minBoundary, maxBoundary] = this.checkNCorrectBoundaries(minBoundary, maxBoundary);
 
-            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
-            this.currentQuestion = generatedNumber + "^2 = ?";
-            this.currentAnswer = generatedNumber * generatedNumber;
-            this.redactedAnswer = generatedNumber + "^2 = " + this.currentAnswer;
+        const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+        this.currentQuestion = generatedNumber + "^2 = ?";
+        this.currentAnswer = generatedNumber * generatedNumber;
+        this.redactedAnswer = generatedNumber + "^2 = " + this.currentAnswer;
 
-            return this.currentQuestion;
-        }
-
-        return '';
+        return this.currentQuestion;
     }
 
     this.cubesGenerateQuestion = function () {
-        const minBoundary = parseInt(this.getParamInURL('cubesMin'));
-        const maxBoundary = parseInt(this.getParamInURL('cubesMax'));
+        let minBoundary = parseInt(this.getParamInURL('cubesMin'));
+        let maxBoundary = parseInt(this.getParamInURL('cubesMax'));
 
-        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
-            if (minBoundary > maxBoundary) {
-                const temp = minBoundary;
-                minBoundary = maxBoundary;
-                maxBoundary = temp;
-            }
+        [minBoundary, maxBoundary] = this.checkNCorrectBoundaries(minBoundary, maxBoundary);
 
-            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
-            this.currentQuestion = generatedNumber + "^3 = ?";
-            this.currentAnswer = generatedNumber * generatedNumber * generatedNumber;
-            this.redactedAnswer = generatedNumber + "^3 = " + this.currentAnswer;
+        const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+        this.currentQuestion = generatedNumber + "^3 = ?";
+        this.currentAnswer = generatedNumber * generatedNumber * generatedNumber;
+        this.redactedAnswer = generatedNumber + "^3 = " + this.currentAnswer;
 
-            return this.currentQuestion;
-        }
-
-        return '';
+        return this.currentQuestion;
     }
 
     this.multiplicationsGenerateQuestion = function () {
-        const minBoundary = parseInt(this.getParamInURL('multiplicationsMin'));
-        const maxBoundary = parseInt(this.getParamInURL('multiplicationsMax'));
+        let minBoundary = parseInt(this.getParamInURL('multiplicationsMin'));
+        let maxBoundary = parseInt(this.getParamInURL('multiplicationsMax'));
 
-        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
-            if (minBoundary > maxBoundary) {
-                const temp = minBoundary;
-                minBoundary = maxBoundary;
-                maxBoundary = temp;
-            }
+        [minBoundary, maxBoundary] = this.checkNCorrectBoundaries(minBoundary, maxBoundary);
 
-            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
-            const secondNumber = this.rand(0, 10, true);
-            this.currentQuestion = generatedNumber + " × " + secondNumber + " = ?";
-            this.currentAnswer = generatedNumber * secondNumber;
-            this.redactedAnswer = generatedNumber + " × " + secondNumber + " = " + this.currentAnswer;
+        const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+        const secondNumber = this.rand(0, 10, true);
+        this.currentQuestion = generatedNumber + " × " + secondNumber + " = ?";
+        this.currentAnswer = generatedNumber * secondNumber;
+        this.redactedAnswer = generatedNumber + " × " + secondNumber + " = " + this.currentAnswer;
 
-            return this.currentQuestion;
-        }
-
-        return '';
+        return this.currentQuestion;
     }
 
     this.divisionsGenerateQuestion = function () {
-        const minBoundary = parseInt(this.getParamInURL('divisionsMin'));
-        const maxBoundary = parseInt(this.getParamInURL('divisionsMax'));
+        let minBoundary = parseInt(this.getParamInURL('divisionsMin'));
+        let maxBoundary = parseInt(this.getParamInURL('divisionsMax'));
 
-        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
-            if (minBoundary > maxBoundary) {
-                const temp = minBoundary;
-                minBoundary = maxBoundary;
-                maxBoundary = temp;
-            }
+        [minBoundary, maxBoundary] = this.checkNCorrectBoundaries(minBoundary, maxBoundary);
 
-            this.currentAnswer = this.rand(minBoundary, maxBoundary, true);
-            const secondNumber = this.rand(1, 10, true);
-            const generatedNumber = this.currentAnswer * secondNumber;
-            
-            this.currentQuestion = generatedNumber + "/" + secondNumber + " = ?";
-            this.redactedAnswer = generatedNumber + "/" + secondNumber + " = " + this.currentAnswer;
+        const tableNumber = this.rand(minBoundary, maxBoundary, true);
+        const singleNumber = this.rand(1, 10, true);
+        const productNumber = tableNumber * singleNumber;
+        const headOrTail = this.rand(0, 1, true);
 
-            return this.currentQuestion;
+        if (headOrTail === 0) {
+            this.currentQuestion = productNumber + " / " + singleNumber + " = ?";
+            this.currentAnswer = productNumber / singleNumber;
+            this.redactedAnswer = productNumber + " / " + singleNumber + " = " + this.currentAnswer;
+        } else {
+            this.currentQuestion = productNumber + " / " + tableNumber + " = ?";
+            this.currentAnswer = productNumber / tableNumber;
+            this.redactedAnswer = productNumber + " / " + tableNumber + " = " + this.currentAnswer;
         }
 
-        return '';
+        return this.currentQuestion;
     }
 
     this.modulosGenerateQuestion = function () {
-        const minBoundary = parseInt(this.getParamInURL('modulosMin'));
-        const maxBoundary = parseInt(this.getParamInURL('modulosMax'));
+        let minBoundary = parseInt(this.getParamInURL('modulosMin'));
+        let maxBoundary = parseInt(this.getParamInURL('modulosMax'));
 
-        if (!(isNaN(minBoundary) || isNaN(maxBoundary))) { 
-            if (minBoundary > maxBoundary) {
-                const temp = minBoundary;
-                minBoundary = maxBoundary;
-                maxBoundary = temp;
-            }
+        [minBoundary, maxBoundary] = this.checkNCorrectBoundaries(minBoundary, maxBoundary);
 
-            const generatedNumber = this.rand(minBoundary, maxBoundary, true);
-            const secondNumber = this.rand(1, 10, true);
-            this.currentQuestion = generatedNumber + " % " + secondNumber + " = ?";
-            this.currentAnswer = generatedNumber % secondNumber;
-            this.redactedAnswer = generatedNumber + " % " + secondNumber + " = " + this.currentAnswer;
+        const generatedNumber = this.rand(minBoundary, maxBoundary, true);
+        const secondNumber = this.rand(1, 10, true);
+        this.currentQuestion = generatedNumber + " % " + secondNumber + " = ?";
+        this.currentAnswer = generatedNumber % secondNumber;
+        this.redactedAnswer = generatedNumber + " % " + secondNumber + " = " + this.currentAnswer;
 
-            return this.currentQuestion;
-        }
-
-        return '';
-    }
+        return this.currentQuestion;
+    };
 }
+
+$(function () {
+    let questionWidget = new QuestionWidget();
+    let answerWidget = new AnswerWidget();
+    let optionPanel = new OptionPanel();
+    let controller = new Controller(questionWidget, answerWidget);
+
+    questionWidget.init();
+    answerWidget.init();
+    optionPanel.init();
+    controller.init();
+
+    $('#optionsButton').on('click', () => optionPanel.show());
+    $('body').on('keydown', (e) => {
+        if(e.which === 27) {
+            e.preventDefault();
+            $('#closeOptionsPanel').click();
+        }
+    })
+});
+
