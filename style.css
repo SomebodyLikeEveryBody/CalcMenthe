@@ -47,7 +47,7 @@ section#content
 section#question
 {
     height: 50%;
-    font-size: 18vh;
+    font-size: calc(4vh + 5vw);
     text-align: center;
     background-color: black;
     border-radius: 25px;
@@ -55,6 +55,7 @@ section#question
     display: flex;
     flex-direction: column;
     justify-content: center;
+    overflow: auto;
 }
 
 input#answer
@@ -117,7 +118,7 @@ button#closeOptionsPanel
 {
     width: 5vw;
     height: 3vw;
-    font-size: 3vw;
+    font-size: 4vw;
 }
 
 input::-webkit-outer-spin-button,
@@ -141,7 +142,7 @@ td.first_label
 {
     section#question
     {
-        font-size: 15vh;
+        /* font-size: 7vh; */
     }   
 
     section#optionsPanel
@@ -171,7 +172,7 @@ td.first_label
 {
     section#question
     {
-        font-size: 8vh;
+        font-size: calc(3vh + 4vw);
     }   
 
     input#answer
@@ -201,4 +202,6 @@ td.first_label
         padding-bottom: 25px;
         padding-top: 15px;
     }
+
+    
 }
