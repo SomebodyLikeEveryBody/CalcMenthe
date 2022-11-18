@@ -2,6 +2,8 @@
 
 https://somebodylikeeverybody.github.io/CalcMenthe/
 
+[openView](https://somebodylikeeverybody.github.io/CalcMenthe/readMeImages/generalView.png)
+
 - Full front end website to train and practice mental calculus
 - Works well on  computer, smartphones and tablets (responsive design)
 - Able to run offline, even with the file:// protocol by drag 'n dropping index.htm in your browser
