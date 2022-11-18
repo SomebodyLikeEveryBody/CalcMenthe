@@ -120,6 +120,11 @@ button#closeOptionsPanel
     font-size: 3vw;
 }
 
+td.first_label
+{
+    
+}
+
 @media all and (max-width: 900px)
 {
     section#question
@@ -134,8 +139,19 @@ button#closeOptionsPanel
 
     #optionsPanel input[type=number]
     {
-        margin-bottom: 15px;
         width: 8vw;
+    }
+
+    td.first_label
+    {
+        padding-left: 15px;
+        
+    }
+
+    td.label
+    {
+        padding-top: 15px;
+        padding-bottom: 25px;
     }
 }
 
@@ -158,7 +174,19 @@ button#closeOptionsPanel
 
     #optionsPanel input[type=number]
     {
-        margin-bottom: 15px;
         width: 7.5vw;
+        height:25px;
+    }
+
+    td.first_label
+    {
+        padding-left: 15px;
+        font-weight: bold;
+    }
+
+    td.label
+    {
+        padding-bottom: 25px;
+        padding-top: 15px;
     }
 }
