@@ -17,5 +17,5 @@ https://somebodylikeeverybody.github.io/CalcMenthe/
   - integrals
   - litteral calculus
   - anatomy quiz
-  - anything needed
+  - anything needed...
   
