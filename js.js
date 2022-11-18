@@ -152,7 +152,7 @@ function OptionPanel() {
     this.jqEl = $("#optionsPanel");
     this.closeOptionsPanelButton = $("#closeOptionsPanel")
     this.isVisible = false;
-    this.parameters = ["squares", "cubes", "multiplications", "divisions", "modulos"];
+    this.parameters = ["squares", "cubes", "additions", "substractions", "multiplications", "divisions", "modulos"];
 
     this.getParamInURL = function (pParam) {
         let vars = {};
@@ -186,7 +186,7 @@ function OptionPanel() {
 
         // If there are multiple "?" in the url or correct url but no options inside, we set default setttings
         if ((urlParams.length !== 2) || (this.isUrlContainingNoOptions())) {
-            window.location.href = window.location.pathname + "?squares=1&squaresMin=0&squaresMax=50&cubes=1&cubesMin=0&cubesMax=50&multiplications=1&multiplicationsMin=0&multiplicationsMax=50&divisions=1&divisionsMin=0&divisionsMax=50&modulos=1&modulosMin=0&modulosMax=50";
+            window.location.href = window.location.pathname + "?squares=1&squaresMin=0&squaresMax=50&cubes=1&cubesMin=0&cubesMax=50&additions=1&additionsMin=0&additionsMax=50&substractions=1&substractionsMin=0&substractionsMax=50&multiplications=1&multiplicationsMin=0&multiplicationsMax=50&divisions=1&divisionsMin=0&divisionsMax=50&modulos=1&modulosMin=0&modulosMax=50";
         }
     };
 
@@ -297,7 +297,7 @@ function QuestionsManager() {
     this.currentQuestion = '';
     this.currentAnswer = '';
     this.redactedAnswer = '';
-    this.parameters = ["squares", "cubes", "multiplications", "divisions", "modulos"];
+    this.parameters = ["squares", "cubes", "additions", "substractions", "multiplications", "divisions", "modulos"];
 
     this.rand = function (pMin, pMax, pInteger) {
         if(pInteger)
@@ -343,7 +343,7 @@ function QuestionsManager() {
     };
 
     this.getAllActivatedModes = function () {
-        const listOptions = ['squares', 'cubes', 'multiplications', 'divisions', 'modulos'];
+        const listOptions = ['squares', 'cubes', "additions", "substractions", 'multiplications', 'divisions', 'modulos'];
         let listActivatedOptions = [];
 
         for (const option of listOptions) {
@@ -370,11 +370,18 @@ function QuestionsManager() {
                 break;
             
 
+            case 'additions':
+                retQuestion = this.additionsGenerateQuestion();
+                break;
+
+            case 'substractions':
+                retQuestion = this.substractionsGenerateQuestion();
+                break;
+
             case 'multiplications':
                 retQuestion = this.multiplicationsGenerateQuestion();
                 break;
     
-
             case 'divisions':
                 retQuestion = this.divisionsGenerateQuestion();
                 break;
@@ -413,6 +420,36 @@ function QuestionsManager() {
         this.currentQuestion = generatedNumber + "^3 = ?";
         this.currentAnswer = generatedNumber * generatedNumber * generatedNumber;
         this.redactedAnswer = generatedNumber + "^3 = " + this.currentAnswer;
+
+        return this.currentQuestion;
+    }
+
+    this.additionsGenerateQuestion = function () {
+        let minBoundary = parseInt(this.getParamInURL('additionsMin'));
+        let maxBoundary = parseInt(this.getParamInURL('additionsMax'));
+
+        [minBoundary, maxBoundary] = this.checkNCorrectBoundaries(minBoundary, maxBoundary);
+
+        const number1 = this.rand(minBoundary, maxBoundary, true);
+        const number2 = this.rand(minBoundary, maxBoundary, true);
+        this.currentQuestion = number1 + " + " + number2 + " = ?";
+        this.currentAnswer = number1 + number2;
+        this.redactedAnswer = number1 + " + " + number2 + " = " + this.currentAnswer;
+
+        return this.currentQuestion;
+    }
+
+    this.substractionsGenerateQuestion = function () {
+        let minBoundary = parseInt(this.getParamInURL('substractionsMin'));
+        let maxBoundary = parseInt(this.getParamInURL('substractionsMax'));
+
+        [minBoundary, maxBoundary] = this.checkNCorrectBoundaries(minBoundary, maxBoundary);
+
+        const number1 = this.rand(minBoundary, maxBoundary, true);
+        const number2 = this.rand(minBoundary, maxBoundary, true);
+        this.currentQuestion = number1 + " - " + number2 + " = ?";
+        this.currentAnswer = number1 - number2;
+        this.redactedAnswer = number1 + " - " + number2 + " = " + this.currentAnswer;
 
         return this.currentQuestion;
     }
