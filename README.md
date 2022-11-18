@@ -16,4 +16,6 @@ https://somebodylikeeverybody.github.io/CalcMenthe/
   - derivatives
   - integrals
   - litteral calculus
+  - anatomy quiz
+  - anything needed
   
